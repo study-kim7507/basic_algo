@@ -39,7 +39,7 @@ int main()
 			pq.push(e.second);
 		}
 
-		if (result <= pq.size()) result = pq.size();
+		if (result < pq.size()) result = pq.size();
 	}
 
 	cout << result << "\n";
