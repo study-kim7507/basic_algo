@@ -25,7 +25,6 @@ int main()
 	}
 
 	// 강의를 시작 시간 기준 오름차순 정렬
-	// 시작 시간이 동일한 경우 종료 시간 기준 오름차순 정렬
 	sort(v.begin(), v.end());
 
 	priority_queue<int, vector<int>, greater<int>> pq;
