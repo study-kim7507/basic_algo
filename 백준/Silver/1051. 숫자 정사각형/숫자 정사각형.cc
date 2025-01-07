@@ -62,8 +62,7 @@ int main()
 		}
 	}
 	
-	if (result == 1) cout << 1 << "\n";
-	else cout << pow(result, 2) << "\n";
+	cout << pow(result, 2) << "\n";
 
 	return 0;
 }
