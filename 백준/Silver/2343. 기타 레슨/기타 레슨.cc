@@ -23,7 +23,7 @@ bool solve(long long length)
 	}
 	if (cur != 0) tmp.push_back(cur);
 
-	return tmp.size() <= m;
+	return tmp.size() > m;
 }
 
 int main()
@@ -46,21 +46,15 @@ int main()
 		en += lec;
 	}
 
-	long long result = 0;
-
 	while (st <= en)
 	{
 		long long mid = (st + en) / 2;
 
-		if (solve(mid))
-		{
-			en = mid - 1;
-			result = mid;
-		}
-		else st = mid + 1;
+		if (solve(mid)) st = mid + 1;
+		else en = mid - 1;
 	}
 
-	cout << result << "\n";
+	cout << st << "\n";
 
 	return 0;
 }
