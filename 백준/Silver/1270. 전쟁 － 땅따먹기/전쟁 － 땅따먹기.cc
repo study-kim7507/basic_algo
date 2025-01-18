@@ -1,7 +1,7 @@
 // 1270. 전쟁 - 땅따먹기
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 using namespace std;
 
@@ -14,30 +14,24 @@ int main()
 	cin >> n;
 	while (n--)
 	{
-		float t;
+		int t;
 		cin >> t;
 
-		map<long, int> m;
+		bool isOccupied = false;
+		unordered_map<long, int> m;
 		for (int i = 0; i < t; i++)
 		{
 			long num;
 			cin >> num;
 			m[num]++;
-		}
 
-		long result = 0;
-		int cnt = 0;
-		for (auto it = m.begin(); it != m.end(); it++)
-		{
-			auto cur = *it;
-			if (cur.second > t / 2)
+			if (m[num] > t / 2 && !isOccupied)
 			{
-				result = cur.first;
-				cnt++;
+				cout << num << "\n";
+				isOccupied = true;
 			}
 		}
-		if (cnt == 0 || cnt > 1) cout << "SYJKGW" << "\n";
-		else if (cnt == 1) cout << result << "\n";
+		if (!isOccupied) cout << "SYJKGW" << "\n";
 	}
 
 	return 0;
