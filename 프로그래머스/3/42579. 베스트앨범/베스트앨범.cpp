@@ -1,48 +1,56 @@
 #include <string>
+#include <iostream>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <algorithm>
+
 using namespace std;
 
-map<string, int> m1;                // {장르, 총 재생횟수}
-map<string, vector<pair<int, int>>> m2;     // {장르, 해당 곡 인덱스, 해당 곡 재생 횟수}
-
-bool cmp1(const pair<string, int>& a, const pair<string, int>& b)
+bool cmp(const pair<int, int>& a, const pair<int, int>& b)
 {
-    return a.second >= b.second;
+    if (a.first > b.first) return a.first > b.first;
+    else if (a.first == b.first) return a.second < b.second;
+    return false;
 }
-
-bool cmp2(const pair<int, int>& a, const pair<int, int>& b)
-{
-    if (a.second == b.second) return a.first < b.first;
-    return a.second > b.second;
-}
-
 
 vector<int> solution(vector<string> genres, vector<int> plays) {
+    vector<int> answer;
     
-    // 장르별로 총 재생횟수를 구함
-    for (int i = 0; i < genres.size(); i++)
-        m1[genres[i]] += plays[i];
-    
-    for (int i = 0; i < genres.size(); i++)
-        m2[genres[i]].push_back({i, plays[i]});
-
-    vector<pair<string, int>> v1(m1.begin(), m1.end());
-    
-    sort(v1.begin(), v1.end(), cmp1);
-    
-    vector<int> result;
-    for (int i = 0; i < v1.size(); i++)
+    map<string, int> m; // {장르, 재생횟수 총합}
+    unordered_map<string, vector<pair<int, int>>> mv; // {장르, [{노래 재생횟수, 노래 고유번호}...]}
+    for (int i = 0; i < plays.size(); i++)
     {
-        string g = v1[i].first;         // 장르
-        vector<pair<int, int>> music = m2[g];       // 현재 장르에 속한 곡들
-        sort(music.begin(), music.end(), cmp2);     // 정렬
-        for (int j = 0; j < music.size() && j < 2; j++)
+        m[genres[i]] += plays[i];
+        mv[genres[i]].push_back({plays[i], i});
+    }
+    
+    // map을 value기준으로 내림차순 정렬
+    vector<pair<int, string>> temp;
+    for (auto it = m.begin(); it != m.end(); it++)
+    {
+        temp.push_back({(*it).second, (*it).first});
+    }
+    sort(temp.rbegin(), temp.rend());
+    
+    // 장르 내에서 노래들의 재생횟수를 기준으로 내림차순 정렬
+    // 같은 경우 고유번호가 낮은 노래가 먼저
+    for (auto it = mv.begin(); it != mv.end(); it++)
+    {
+        sort((*it).second.begin(), (*it).second.end(), cmp);
+    }
+    
+    // 정답 
+    for (int i = 0; i != temp.size(); i++)
+    {
+        string genre = temp[i].second;
+        int cnt = 0;
+        for (auto it = mv[genre].begin(); it != mv[genre].end() && cnt < 2; it++, cnt++)
         {
-            result.push_back(music[j].first);
+            answer.push_back((*it).second);
         }
     }
     
-    return result;
+    
+    return answer;
 }
