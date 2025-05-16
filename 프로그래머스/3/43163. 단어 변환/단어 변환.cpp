@@ -22,6 +22,7 @@ void dfs(string cur, string target, int depth)
         if (vis[nxt]) continue;
         vis[nxt] = true;
         dfs(nxt, target, depth + 1);
+        vis[nxt] = false;
     }
 }
 
