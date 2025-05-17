@@ -1,48 +1,35 @@
 #include <string>
 #include <vector>
-#include <map>
-#include <algorithm>
 
 using namespace std;
 
-map<int, int> lostM;
-map<int, int> reserveM;
-
 int solution(int n, vector<int> lost, vector<int> reserve) {
+    vector<int> v(n + 1, 0);
     for (int i = 0; i < lost.size(); i++)
-        lostM[lost[i]]++;
+        v[lost[i]]--;
     for (int i = 0; i < reserve.size(); i++)
-        reserveM[reserve[i]]++;
+        v[reserve[i]]++;
     
-    for (auto it1 = reserveM.begin(); it1 != reserveM.end(); it1++)
+    for (int i = 1; i <= n; i++)
     {
-        for (auto it2 = lostM.begin(); it2 != lostM.end(); it2++)
+        if (v[i] == -1)
         {
-            if ((*it2).second >= 1 && (*it1).second >= 1 && (*it1).first == (*it2).first)
+            if (v[i-1] == 1) 
             {
-                (*it2).second--;
-                (*it1).second--;
+                v[i-1] = v[i] = 0;
+                continue;
+            }
+            else if (v[i+1] == 1)
+            {
+                v[i+1] = v[i] = 0;
+                continue;
             }
         }
     }
     
-    for (auto it1 = reserveM.begin(); it1 != reserveM.end(); it1++)
-    {
-        for (auto it2 = lostM.begin(); it2 != lostM.end(); it2++)
-        {
-            if ((*it2).second >= 1 && (*it1).second >= 1 && abs((*it1).first - (*it2).first) <= 1)
-            {
-                (*it2).second--;
-                (*it1).second--;
-            }
-        }
-    }
-    
-    int answer = n;
-    for (auto it = lostM.begin(); it != lostM.end(); it++)
-    {
-        if ((*it).second != 0) answer--;
-    }
+    int answer = 0;
+    for (int i = 1; i <= n; i++)
+        if (v[i] != -1) answer++;
     
     return answer;
 }
