@@ -74,7 +74,7 @@ int main()
 			uni(cur, nxt);
 			cnt++;
 
-			if (cnt == n - 1) break;
+			if (cnt == n) break;
 
 			q.push(nxt);
 		}
