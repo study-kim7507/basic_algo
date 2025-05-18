@@ -21,8 +21,8 @@ long long solution(int n, vector<int> times) {
     sort(times.begin(), times.end());
     
     long long st = 1;
-    long long en = 10000000000000;
-    long long answer = 10000000000000;
+    long long en = 1000000000000000000;
+    long long answer = 1000000000000000000;
     
     while (st <= en)
     {
