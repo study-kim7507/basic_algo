@@ -6,75 +6,53 @@
 
 using namespace std;
 
-int n;
-int answer = 0;
+int board[17][17];
 
-// 집, 파이프 한쪽 끝 좌표, 방향 (0 : 가로, 1 : 세로, 2 : 대각선)
-void dfs(vector<vector<int>>& board, int r, int c, int direction)
-{
-	if (r <= 0 || r > n || c <= 0 || c > n) return;
-	if (r == n && c == n)
-	{
-		answer++;
-		return;
-	}
-
-	// 가로인 경우
-	if (direction == 0)
-	{
-		// 오른쪽 이동
-		if (c < n && board[r][c + 1] == 0) dfs(board, r, c + 1, 0);
-		
-		// 대각선 이동
-		if (r < n && c < n &&
-			board[r][c + 1] == 0 &&
-			board[r + 1][c] == 0 &&
-			board[r + 1][c + 1] == 0) dfs(board, r + 1, c + 1, 2);
-	}
-	// 세로인 경우
-	else if (direction == 1)
-	{
-		// 아래 이동
-		if (r < n && board[r + 1][c] == 0) dfs(board, r + 1, c, 1);
-
-		// 대각선 이동
-		if (r < n && c < n &&
-			board[r][c + 1] == 0 &&
-			board[r + 1][c] == 0 &&
-			board[r + 1][c + 1] == 0) dfs(board, r + 1, c + 1, 2);
-	}
-
-	// 대각선인 경우
-	else if (direction == 2)
-	{
-		// 오른쪽 이동
-		if (c < n && board[r][c + 1] == 0) dfs(board, r, c + 1, 0);
-
-		// 아래 이동
-		if (r < n && board[r + 1][c] == 0) dfs(board, r + 1, c, 1);
-
-		// 대각선 이동
-		if (r < n && c < n &&
-			board[r][c + 1] == 0 &&
-			board[r + 1][c] == 0 &&
-			board[r + 1][c + 1] == 0) dfs(board, r + 1, c + 1, 2);
-	}
-}
+// 0: 가로, 1: 세로, 2: 대각선
+int dp[3][17][17];
 
 int main()
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
+	int n;
 	cin >> n;
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= n; j++)
+			cin >> board[i][j];
 
-	vector<vector<int>> board(n + 1, vector<int>(n + 1, 0));;
-	for (int r = 1; r <= n; r++)
-		for (int c = 1; c <= n; c++)
-			cin >> board[r][c];
+	// 초기값 설정
+	dp[0][1][2] = 1;
+	for (int i = 3; i <= n; i++)
+	{
+		if (board[1][i] == 0)
+			dp[0][1][i] = dp[0][1][i - 1];
+	}
+		
+	for (int i = 2; i <= n; i++)
+	{
+		for (int j = 2; j <= n; j++)
+		{
+			// 대각선
+			if (board[i][j] == 0 && board[i - 1][j] == 0 && board[i][j - 1] == 0)
+			{
+				dp[2][i][j] += (dp[0][i - 1][j - 1] + dp[1][i - 1][j - 1] + dp[2][i - 1][j - 1]);
+			}
+			// 가로 및 세로
+			if (board[i][j] == 0)
+			{
+				// 가로
+				dp[0][i][j] += (dp[0][i][j - 1] + dp[2][i][j - 1]);
 
+				// 세로
+				dp[1][i][j] += (dp[1][i - 1][j] + dp[2][i - 1][j]);
+			}
+		}
+	}
 
-	dfs(board, 1, 2, 0);
+	int answer = 0;
+	answer += (dp[0][n][n] + dp[1][n][n] + dp[2][n][n]);
 	std::cout << answer << "\n";
 
 	return 0;
