@@ -6,10 +6,23 @@
 
 using namespace std;
 
-
-vector<int> friends[10001];
 int cost[10001];
-bool vis[10001];
+int parent[10001];
+
+int uf_find(int x)
+{
+	if (x != parent[x]) return parent[x] = uf_find(parent[x]);
+	return x;
+}
+
+void uf_union(int x, int y)
+{
+	x = uf_find(x);
+	y = uf_find(y);
+
+	if (cost[x] < cost[y]) parent[y] = x;
+	else parent[x] = y;
+}
 
 int main()
 {
@@ -20,43 +33,29 @@ int main()
 	cin >> n >> m >> k;
 
 	for (int i = 1; i <= n; i++)
+	{
+		parent[i] = i;
 		cin >> cost[i];
+	}
+
 	for (int i = 0; i < m; i++)
 	{
 		int v, w;
 		cin >> v >> w;
-		friends[v].push_back(w);
-		friends[w].push_back(v);
+		uf_union(v, w);
 	}
-
-	int allCost = 0;
+	
+	int answer = 0;
 	for (int i = 1; i <= n; i++)
 	{
-		if (vis[i]) continue;
-
-		queue<int> q;
-		q.push(i);
-		vis[i] = true;
-		int curCost = cost[i];
-
-		while (!q.empty())
+		if (uf_find(0) != uf_find(i))
 		{
-			auto cur = q.front(); q.pop();
-			for (auto nxt : friends[cur])
-			{
-				if (vis[nxt]) continue;
-
-				curCost = min(curCost, cost[nxt]);
-				vis[nxt] = true;
-				q.push(nxt);
-			}
+			answer += cost[uf_find(i)];
+			uf_union(0, i);
 		}
-		// std::cout << i << " " << curCost << "\n";
-		allCost += curCost;
 	}
 
-	if (allCost > k) std::cout << "Oh no" << "\n";
-	else std::cout << allCost << "\n";
-
+	if (answer > k) std::cout << "Oh no" << "\n";
+	else std::cout << answer << "\n";
 	return 0;
 }
