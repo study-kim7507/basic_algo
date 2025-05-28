@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 
 using namespace std;
@@ -31,7 +31,7 @@ void cal()
 	int tempRowSize = 0;
 	for (int i = 0; i < curCSize; i++)
 	{
-		map<int, int> tempM;
+		unordered_map<int, int> tempM;
 		for (int j = 0; j < curRSize; j++)
 		{
 			if (board[i][j] != 0)
@@ -48,7 +48,7 @@ void cal()
 	int tempColSize = 0;
 	for (int i = 0; i < curRSize; i++)
 	{
-		map<int, int> tempC;
+		unordered_map<int, int> tempC;
 		for (int j = 0; j < curCSize; j++)
 		{
 			if (board[j][i] != 0)
