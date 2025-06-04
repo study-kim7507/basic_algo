@@ -1,35 +1,33 @@
-// 특정한 최단 경로
-// 1 -> v1 -> v2 -> n
-// 1 -> v2 -> v1 -> n
+// BOJ_1504. 특정한 최단 경로
 #include <iostream>
 #include <vector>
 #include <queue>
 #include <algorithm>
+
 using namespace std;
 
-int n, e;
+#define INF 0x3f3f3f3f
 
-// adj[u] = {c, v}
-// u에서 v로 가는 비용 c
-vector<pair<int, int>> adj[1000];
+int n, e, v1, v2;
+vector<pair<int, int>> adjs[801];
 
-const int INF = 0x3f3f3f3f;
-long long dijkstra(int st, int en)
+int dijkstra(int st, int en)
 {
-	long long dist[801];
-	for (int i = 1; i <= n; i++)
-		dist[i] = INF;
+	int dist[801];
+	fill(dist, dist + 801, INF);
 
-	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 	dist[st] = 0;
-	pq.push({ dist[st], st});
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+	pq.push({ 0, st });
+
 	while (!pq.empty())
 	{
 		auto cur = pq.top(); pq.pop();
-		if (dist[cur.second] < cur.first) continue;
-		for (auto nxt : adj[cur.second])
+		if (dist[cur.second] != cur.first) continue;
+		for (auto nxt : adjs[cur.second])
 		{
 			if (dist[nxt.second] <= dist[cur.second] + nxt.first) continue;
+
 			dist[nxt.second] = dist[cur.second] + nxt.first;
 			pq.push({ dist[nxt.second], nxt.second });
 		}
@@ -45,23 +43,39 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n >> e;
-	
+
+	// 간선 입력
 	for (int i = 0; i < e; i++)
 	{
 		int a, b, c;
 		cin >> a >> b >> c;
-		adj[a].push_back({ c, b });
-		adj[b].push_back({ c, a });
+		adjs[a].push_back({ c, b });
+		adjs[b].push_back({ c, a });
 	}
 
-	int v1, v2;
+	// 반드시 지나야 하는 두 정점 입력
 	cin >> v1 >> v2;
 
-	long long route1 = (long long)(dijkstra(1, v1)) + (long long)(dijkstra(v1, v2)) + (long long)(dijkstra(v2, n));
-	long long route2 = (long long)(dijkstra(1, v2)) + (long long)(dijkstra(v2, v1)) + (long long)(dijkstra(v1, n));
-	long long ans = min(route1, route2);
 
-	if (ans >= INF) cout << -1 << "\n";
-	else cout << ans << "\n";
+	int answer = 0;
+
+	// 1 -> v1 -> v2 -> n
+	int OneToV1 = dijkstra(1, v1);
+	int V1ToV2 = dijkstra(v1, v2);
+	int V2ToN = dijkstra(v2, n);
+
+	if (OneToV1 == INF || V1ToV2 == INF || V2ToN == INF) answer = INF;
+	else answer = OneToV1 + V1ToV2 + V2ToN;
+
+	// 1 -> v2 -> v1 -> n
+	int OneToV2 = dijkstra(1, v2);
+	int V2ToV1 = dijkstra(v2, v1);
+	int V1ToN = dijkstra(v1, n);
+
+	if (!(OneToV2 == INF || V2ToV1 == INF || V1ToN == INF)) answer = min(answer, OneToV2 + V2ToV1 + V1ToN);
+
+	if (answer >= INF) std::cout << -1 << "\n";
+	else std::cout << answer << "\n";
+
 	return 0;
 }
