@@ -6,39 +6,41 @@
 
 using namespace std;
 
+#define INF 0x3f3f3f3f
+
+int dist[20001];
+vector<pair<int, int>> adjs[20001];
+
 int solution(int n, vector<vector<int>> edge) {
-    vector<int> dist(n + 1, 0);
-    vector<vector<int>> adjs(n + 1, vector<int>());
-    
-    for (const auto& e : edge)
+    fill(dist, dist + 20001, INF);    
+    for (auto e : edge)
     {
-        int a = e[0];
-        int b = e[1];
-        adjs[a].push_back(b);
-        adjs[b].push_back(a);
+        int u = e[0];
+        int v = e[1];
+        
+        adjs[u].push_back({1, v});
+        adjs[v].push_back({1, u});
     }
     
-    queue<int> q;
-    q.push(1);
-    dist[1]++;
-    
-    while(!q.empty())
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    dist[1] = 0;
+    pq.push({dist[1], 1});
+    while (!pq.empty())
     {
-        auto cur = q.front(); q.pop();
-        for (auto nxt : adjs[cur])
+        auto cur = pq.top(); pq.pop();
+        if (dist[cur.second] != cur.first) continue;
+        for (auto nxt : adjs[cur.second])
         {
-            if (dist[nxt] != 0 && dist[nxt] <= dist[cur] + 1) continue;
-            dist[nxt] = dist[cur] + 1;
-            q.push(nxt);
+            if (dist[nxt.second] <= dist[cur.second] + nxt.first) continue;
+            dist[nxt.second] = dist[cur.second] + nxt.first;
+            pq.push({dist[nxt.second], nxt.second});
         }
     }
     
-    int maxDist = *max_element(dist.begin(), dist.end());
     int answer = 0;
-    for (const auto& e : dist)
-    {
-        if (e == maxDist) answer++;
-    }
+    int maxDist = *max_element(dist + 1, dist + n + 1);
+    for (int i = 1; i <= n; i++)
+        if (dist[i] == maxDist) answer++;
     
     return answer;
 }
