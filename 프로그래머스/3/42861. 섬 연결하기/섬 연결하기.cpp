@@ -1,5 +1,3 @@
-// 최소 신장 트리
-
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -7,57 +5,49 @@
 using namespace std;
 
 int parent[101];
+int uf_find(int x)
+{
+    if (x != parent[x]) return parent[x] = uf_find(parent[x]);
+    return x;
+}
 
-// {cost, {a, b}}
+void uf_union(int x, int y)
+{
+    x = uf_find(x);
+    y = uf_find(y);
+    
+    if (x < y) parent[y] = x;
+    else parent[x] = y;
+}
+
 vector<pair<int, pair<int, int>>> edges;
-
-int f(int a)
-{
-    if (a == parent[a]) return a;
-    return f(parent[a]);
-}
-
-void u(int a, int b)
-{
-    a = f(a);
-    b = f(b);
-    if (a < b) parent[b] = a;
-    else parent[a] = b;
-}
-
 int solution(int n, vector<vector<int>> costs) {
-    for (int i = 0; i < 101; i++)
+    for (int i = 0; i <= n; i++)
         parent[i] = i;
     
-    for (int i = 0; i < costs.size(); i++)
+    for (auto e : costs)
     {
-        int a = costs[i][0];
-        int b = costs[i][1];
-        int cost = costs[i][2];
-        edges.push_back({cost, {a, b}});
+        int u = e[0];
+        int v = e[1];
+        int c = e[2];
+        
+        edges.push_back({c, {u, v}});
+        edges.push_back({c, {v, u}});
     }
     
-    // 비용을 기준으로 오름차순 정렬
     sort(edges.begin(), edges.end());
     
     int cnt = 0;
     int answer = 0;
-    for (auto& edge : edges)
+    for (auto edge : edges)
     {
-        int cost = edge.first;
-        int a = edge.second.first;
-        int b = edge.second.second;
-        
-        // 이미 연결되어 있다면 건너 뜀
-        if (f(a) == f(b)) continue;
-        
-        // 연결
-        u(a, b);
-        answer += cost;
-        cnt++;
-        
-        if (cnt == n - 1) break;
+        if (uf_find(edge.second.first) != uf_find(edge.second.second))
+        {
+            uf_union(edge.second.first, edge.second.second);
+            cnt++;
+            answer += edge.first;
+            if (cnt == n - 1) break;
+        }
     }
-    
     return answer;
 }
