@@ -11,11 +11,10 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 int n, m;
 char board[21][21];
-vector<bool> vis(27, false);
 
 int answer = 0;
 
-void dfs(int x, int y, int cnt)
+void dfs(int x, int y, int cnt, vector<bool>& vis)
 {
 	answer = max(answer, cnt);
 
@@ -28,7 +27,7 @@ void dfs(int x, int y, int cnt)
 		if (!vis[board[nx][ny] - 'A'])
 		{
 			vis[board[nx][ny] - 'A'] = true;
-			dfs(nx, ny, cnt + 1);
+			dfs(nx, ny, cnt + 1, vis);
 			vis[board[nx][ny] - 'A'] = false;
 		}
 	}
@@ -51,9 +50,9 @@ int main()
 		}
 	}
 
-
+	vector<bool> vis(27, false);
 	vis[board[0][0] - 'A'] = true;
-	dfs(0, 0, 1);
+	dfs(0, 0, 1, vis);
 
 	std::cout << answer << "\n";
 
