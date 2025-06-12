@@ -6,32 +6,27 @@
 
 using namespace std;
 
-#define INF 0x3f3f3f3f
-
 vector<int> edges[100001];
 
 int dijkstra(int st, int en)
 {
     int dist[100001];
-    fill(dist, dist + 100001, INF);
-    
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    fill(dist, dist + 100001, -1);
+
+    queue<int> q;
     dist[st] = 0;
-    pq.push({dist[st], st});
-    
-    while (!pq.empty())
+    q.push(st);
+    while (!q.empty())
     {
-        auto cur = pq.top(); pq.pop();
-        if (dist[cur.second] != cur.first) continue;
-        for (auto nxt : edges[cur.second])
+        auto cur = q.front(); q.pop();
+        for (auto nxt : edges[cur])
         {
-            if (dist[nxt] <= dist[cur.second] + 1) continue;
-            dist[nxt] = dist[cur.second] + 1;
-            pq.push({dist[nxt], nxt});
+            if (dist[nxt] != -1 && dist[nxt] <= dist[cur] + 1) continue;
+            dist[nxt] = dist[cur] + 1;
+            q.push(nxt);
         }
     }
     
-    if (dist[en] == INF) return -1;
     return dist[en];
 }
 
