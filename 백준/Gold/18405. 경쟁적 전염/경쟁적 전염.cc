@@ -18,7 +18,7 @@ int s, x, y;
 int board[201][201];
 
 // 바이러스가 존재하는 좌표 저장
-queue<pair<int, int>> virus[1001];	
+vector<pair<int, int>> virus[1001];	
 
 int main()
 {
@@ -32,7 +32,7 @@ int main()
 		{
 			cin >> board[i][j];
 			if (board[i][j] != 0) 
-				virus[board[i][j]].push({ i, j });
+				virus[board[i][j]].push_back({ i, j });
 		}
 	}
 	
@@ -42,16 +42,10 @@ int main()
 	{
 		for (int i = 1; i <= k; i++)
 		{
-			queue<pair<int, int>> q;
-			while (!virus[i].empty())
-			{
-				q.push(virus[i].front());
-				virus[i].pop();
-			}
+			vector<pair<int, int>> temp;
 
-			while (!q.empty())
+			for (auto cur : virus[i])
 			{
-				auto cur = q.front(); q.pop();
 				for (int dir = 0; dir < 4; dir++)
 				{
 					int nx = cur.X + dx[dir];
@@ -61,9 +55,12 @@ int main()
 					if (board[nx][ny] != 0) continue;
 
 					board[nx][ny] = i;
-					virus[i].push({ nx, ny });
+					temp.push_back({ nx, ny });
 				}
 			}
+
+			virus[i].clear();
+			virus[i] = temp;
 		}
 	}
 	
