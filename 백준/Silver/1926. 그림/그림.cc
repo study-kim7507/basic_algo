@@ -1,69 +1,69 @@
-// 1926. 그림
+// BOJ_1926. 그림
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 #define X first
 #define Y second
 
+const int dx[4] = { -1, 0, 1, 0 };
+const int dy[4] = { 0, -1, 0, 1 };
+
+int n, m;
 int board[501][501];
-bool visit[501][501];
+bool vis[501][501];
 
-int dx[4] = { 1, 0, -1, 0 };
-int dy[4] = { 0, -1, 0, 1 };
-
-int height, width; // n, m. 도화지의 세로, 가로 크기
 int main()
 {
-	ios::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
+	ios::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
 
-	cin >> height >> width;
-	for (int y = 1; y <= height; y++)
+	cin >> n >> m;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			cin >> board[i][j];
+
+	int cnt = 0;
+	int area = 0;
+
+	for (int i = 0; i < n; i++)
 	{
-		for (int x = 1; x <= width; x++)
+		for (int j = 0; j < m; j++)
 		{
-			cin >> board[y][x];
-		}
-	}
+			if (vis[i][j] || board[i][j] == 0) continue;
 
-	int pictureCount = 0; // 도화지 내의 그림의 개수
-	int maxArea = 0;	  // 그림 중 가장 큰 그림의 넓이.
+			cnt++;
 
-	for (int y = 1; y <= height; y++) // i : 세로, y
-	{
-		for (int x = 1; x <= width; x++) // j : 가로, ㅌ
-		{
-			if (board[y][x] != 0 && visit[y][x] != true)
+			queue<pair<int, int>> q;
+			q.push({ i, j });
+			vis[i][j] = true;
+
+			int curArea = 0;
+			while (!q.empty())
 			{
-				int curPictureArea = 0; // 현재 그림의 넓이
-				queue<pair<int, int>> q;
-				q.push({ x, y });
-				visit[y][x] = true; // 방문 표시
-				while (!q.empty())
+				auto cur = q.front(); q.pop();
+				curArea++;
+				for (int dir = 0; dir < 4; dir++)
 				{
-					auto cur = q.front();
-					q.pop();
-					curPictureArea++;
-					for (int dir = 0; dir < 4; dir++)
-					{
-						int nx = cur.X + dx[dir];
-						int ny = cur.Y + dy[dir];
-						if (nx > width || ny > height || nx <= 0 || ny <= 0) continue;
-						if (visit[ny][nx] || board[ny][nx] != 1) continue;
-						q.push({ nx, ny });
-						visit[ny][nx] = true;
-					}
+					int nx = cur.X + dx[dir];
+					int ny = cur.Y + dy[dir];
+
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+					if (board[nx][ny] == 0) continue;
+					if (vis[nx][ny]) continue;
+
+					q.push({ nx, ny });
+					vis[nx][ny] = true;
 				}
-				pictureCount++;
-				if (maxArea < curPictureArea)
-					maxArea = curPictureArea;
 			}
+
+			area = max(area, curArea);
 		}
 	}
 
-	cout << pictureCount << "\n";
-	cout << maxArea << "\n";
+	std::cout << cnt << "\n" << area << "\n";
+
 	return 0;
 }
