@@ -2,34 +2,27 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
 using namespace std;
+
+int n;
+vector<int> v;
 
 int main()
 {
-	ios::sync_with_stdio(0); 
+	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	int n;
-	
 	cin >> n;
-	vector<int> num(n, 0);
-	vector<int> dp(n, 1);
-
-	for (int i = 0; i < n; i++)
-		cin >> num[i];
-
 	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < i; j++)
-		{
-			if (num[j] < num[i])
-			{
-				dp[i] = max(dp[i], dp[j] + 1);
-			}
-		}
+		int num;
+		cin >> num;
+
+		auto it = lower_bound(v.begin(), v.end(), num);
+		if (it == v.end()) v.push_back(num);
+		else *it = num;
 	}
 
-	std::cout << *max_element(dp.begin(), dp.end()) << "\n";
+	std::cout << v.size() << "\n";
 	return 0;
 }
