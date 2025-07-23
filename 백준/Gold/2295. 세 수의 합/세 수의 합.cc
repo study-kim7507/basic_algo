@@ -1,36 +1,35 @@
+// BOJ_2295. 세 수의 합
 #include <iostream>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
 using namespace std;
-
-int n;
-long long arr[1001];
-vector<long long> twoSum;
 
 int main()
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
+	int n;
 	cin >> n;
+	vector<int> nums(n, 0);
 	for (int i = 0; i < n; i++)
-		cin >> arr[i];
-
-	sort(arr, arr + n);
-	// 두 수의 합
+		cin >> nums[i];
+	sort(nums.begin(), nums.end());
+	
+	vector<int> twoSums;
 	for (int i = 0; i < n; i++)
 		for (int j = i; j < n; j++)
-			twoSum.push_back(arr[i] + arr[j]);
-	
-	sort(twoSum.begin(), twoSum.end());
+			twoSums.push_back(nums[i] + nums[j]);
+	sort(twoSums.begin(), twoSums.end());
 
-	for (int i = n - 1; i > 0; i--)
+	int ans = 0;
+	for (int i = n - 1; i >= 0; i--)
 	{
-		for (int j = 0; j < i; j++)
+		for (int j = 0; j < n; j++)
 		{
-			if (binary_search(twoSum.begin(), twoSum.end(), arr[i] - arr[j]))
+			if (binary_search(twoSums.begin(), twoSums.end(), nums[i] - nums[j]))
 			{
-				cout << arr[i] << "\n";
+				std::cout << nums[i] << "\n";
 				return 0;
 			}
 		}
