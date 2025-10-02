@@ -1,41 +1,40 @@
-// BOJ_1504. 특정한 최단 경로
+// BOJ 1504. 특정한 최단 거리
+// 1 -> V1 -> V2 -> N
+// 1 -> V2 -> V1 -> N
+// 방향성이 없으므로 V1 -> V2 == V2 -> V1
 #include <iostream>
 #include <vector>
 #include <queue>
 #include <algorithm>
-
 using namespace std;
 
-#define INF 0x3f3f3f3f
+const int MAX = 987654321;
 
 int n, e, v1, v2;
-vector<pair<int, int>> adjs[801];
+vector<pair<int, int>> edges[801];
 
 int dijkstra(int st, int en)
 {
 	int dist[801];
-	fill(dist, dist + 801, INF);
+	fill(dist, dist + 801, MAX);
 
-	dist[st] = 0;
 	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-	pq.push({ 0, st });
-
+	dist[st] = 0;
+	pq.push({ dist[st], st });
 	while (!pq.empty())
 	{
 		auto cur = pq.top(); pq.pop();
 		if (dist[cur.second] != cur.first) continue;
-		for (auto nxt : adjs[cur.second])
+		for (auto nxt : edges[cur.second])
 		{
-			if (dist[nxt.second] <= dist[cur.second] + nxt.first) continue;
-
-			dist[nxt.second] = dist[cur.second] + nxt.first;
-			pq.push({ dist[nxt.second], nxt.second });
+			if (dist[nxt.first] <= nxt.second + cur.first) continue;
+			dist[nxt.first] = nxt.second + cur.first;
+			pq.push({ dist[nxt.first], nxt.first });
 		}
 	}
 
 	return dist[en];
 }
-
 
 int main()
 {
@@ -43,39 +42,38 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n >> e;
-
-	// 간선 입력
 	for (int i = 0; i < e; i++)
 	{
-		int a, b, c;
-		cin >> a >> b >> c;
-		adjs[a].push_back({ c, b });
-		adjs[b].push_back({ c, a });
+		int u, v, c;
+		cin >> u >> v >> c;
+		edges[u].push_back({ v, c });
+		edges[v].push_back({ u, c });
 	}
-
-	// 반드시 지나야 하는 두 정점 입력
 	cin >> v1 >> v2;
 
+	int oneToV1, oneToV2, v1ToV2, v2ToV1, v1ToN, v2ToN;
+	v1ToV2 = v2ToV1 = dijkstra(v1, v2);
 
-	int answer = 0;
+	if (v1ToV2 == MAX || v2ToV1 == MAX)
+	{
+		std::cout << -1 << "\n";
+		return 0;
+	}
 
-	// 1 -> v1 -> v2 -> n
-	int OneToV1 = dijkstra(1, v1);
-	int V1ToV2 = dijkstra(v1, v2);
-	int V2ToN = dijkstra(v2, n);
+	oneToV1 = dijkstra(1, v1);
+	oneToV2 = dijkstra(1, v2);
+	v1ToN = dijkstra(v1, n);
+	v2ToN = dijkstra(v2, n);
 
-	if (OneToV1 == INF || V1ToV2 == INF || V2ToN == INF) answer = INF;
-	else answer = OneToV1 + V1ToV2 + V2ToN;
+	int path1 = oneToV1 + v1ToV2 + v2ToN;
+	int path2 = oneToV2 + v2ToV1 + v1ToN;
 
-	// 1 -> v2 -> v1 -> n
-	int OneToV2 = dijkstra(1, v2);
-	int V2ToV1 = dijkstra(v2, v1);
-	int V1ToN = dijkstra(v1, n);
+	if (path1 >= MAX && path2 >= MAX)
+	{
+		std::cout << -1 << "\n";
+		return 0;
+	}
 
-	if (!(OneToV2 == INF || V2ToV1 == INF || V1ToN == INF)) answer = min(answer, OneToV2 + V2ToV1 + V1ToN);
-
-	if (answer >= INF) std::cout << -1 << "\n";
-	else std::cout << answer << "\n";
-
+	std::cout << min(path1, path2) << "\n";
 	return 0;
 }
