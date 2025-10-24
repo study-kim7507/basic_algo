@@ -1,19 +1,13 @@
-// 학생 A가 학생 B의 앞에 서야한다
-	// 위상 정렬, A->B
-
+// 위상 정렬
 #include <iostream>
-#include <vector>
 #include <queue>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
-int n, m;					// 학생의 수, 키를 비교한 횟수
+int n, m;
 vector<int> adj[32001];
-
-int indegree[32001];
-queue<int> zero;
-
-vector<int> result;
+int inDegree[32001];
 
 int main()
 {
@@ -26,24 +20,22 @@ int main()
 		int u, v;
 		cin >> u >> v;
 		adj[u].push_back(v);
-		indegree[v]++;
+		inDegree[v]++;
 	}
 
+	queue<int> q;
 	for (int i = 1; i <= n; i++)
-		if (indegree[i] == 0) zero.push(i);
+		if (inDegree[i] == 0) q.push(i);
 
-
-	while (!zero.empty())
+	while (!q.empty())
 	{
-		int cur = zero.front(); zero.pop();
-		if (indegree[cur] == 0) result.push_back(cur);
-
+		int cur = q.front(); q.pop();
+		cout << cur << " ";
 		for (auto nxt : adj[cur])
-			if (--indegree[nxt] == 0) zero.push(nxt);
+		{
+			if (--inDegree[nxt] == 0) q.push(nxt);
+		}
 	}
-
-	for (const int& element : result)
-		cout << element << " ";
 
 	return 0;
 }
