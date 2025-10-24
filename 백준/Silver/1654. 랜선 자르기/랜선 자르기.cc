@@ -1,30 +1,19 @@
-// Parametric Search
-// 최적화 문제 -> 결정 문제
-// (최적화 문제) N개를 만들 수 있는 랜선의 최대 길이
-// -> (결정 문제) 랜선의 길이가 X일 때, 랜선이 N개 이상인가 아닌가?
-
+// BOJ_1654. 랜선 자르기
 #include <iostream>
+#include <vector>
+#include <climits>
 #include <algorithm>
-#include <limits>
 using namespace std;
 
-int k, n;
-long long arr[10001];
+int k, l;
 
-bool solve(long long x)
+bool solve(long long length, vector<int>& v)
 {
 	long long cnt = 0;
 	for (int i = 0; i < k; i++)
-		cnt += (arr[i] / x);
-	return cnt >= n;
-}
+		cnt += v[i] / length;
 
-int bs(long long st, long long en)
-{
-	if (st >= en) return st;
-	long long mid = (st + en + 1) / 2;
-	if (!solve(mid)) return bs(st, mid - 1);
-	else return bs(mid, en);
+	return cnt >= l;
 }
 
 int main()
@@ -32,12 +21,25 @@ int main()
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> k >> n;
+	cin >> k >> l;
+	vector<int> v(k, 0);
 	for (int i = 0; i < k; i++)
-		cin >> arr[i];
+		cin >> v[i];
 
+	long long ans = 0;
+	long long st = 1, en = INT_MAX;
+	while (st <= en)
+	{
+		long long mid = (st + en) / 2;
+		if (solve(mid, v))
+		{
+			ans = max(ans, mid);
+			st = mid + 1;
+		}
+		else en = mid - 1;
+	}
 
-	cout << bs(1, 0x7FFFFFFF) << "\n";
+	std::cout << ans << "\n";
 
 	return 0;
 }
