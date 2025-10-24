@@ -1,40 +1,33 @@
 // BOJ 11657. 타임머신
 #include <iostream>
+#include <climits>
 #include <vector>
 #include <tuple>
-#include <queue>
 #include <algorithm>
 using namespace std;
 
-#define INF 987654321
-
 int n, m;
-vector<tuple<int, int, int>> edges; // a에서 b로 가는데 걸리는 시간 c
-long long dist[501];
+vector<tuple<int, int, int>> edges;
+vector<long long> dist;
 
 bool bellmanford()
 {
-	dist[1] = 0;	// 시작 정점
-	for (int i = 1; i <= n - 1; i++)
+	dist = vector<long long>(n + 1, LLONG_MAX);
+	dist[1] = 0;
+	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < m; j++)
+		for (int j = 0; j < edges.size(); j++)
 		{
 			int from, to, cost;
 			tie(from, to, cost) = edges[j];
 
-			if (dist[from] == INF) continue;
-			if (dist[to] > dist[from] + cost)
+			if (dist[from] != LLONG_MAX && dist[to] > dist[from] + cost)
+			{
 				dist[to] = dist[from] + cost;
+				if (i == n - 1)	// n번째에도 갱신이 이루어진 경우 음의 사이클이 형성된 것임 -> 무한이 오래전으로 되돌릴 수 있음
+					return true;
+			}
 		}
-	}
-
-	for (int j = 0; j < m; j++)
-	{
-		int from, to, cost;
-		tie(from, to, cost) = edges[j];
-		if (dist[from] == INF) continue;
-		if (dist[to] > dist[from] + cost)
-			return true;
 	}
 
 	return false;
@@ -50,21 +43,20 @@ int main()
 	{
 		int a, b, c;
 		cin >> a >> b >> c;
-
 		edges.push_back(make_tuple(a, b, c));
 	}
 
-	fill(dist, dist + 501, INF);
-	
-	bool isNegativeCycle = bellmanford();
-	if (isNegativeCycle) std::cout << -1 << "\n";
-	else
+	if (bellmanford())
 	{
-		for (int i = 2; i <= n; i++)
-		{
-			if (dist[i] == INF) std::cout << -1 << "\n";
-			else std::cout << dist[i] << "\n";
-		}
+		std::cout << -1 << "\n";
+		return 0;
 	}
+	
+	for (int i = 2; i <= n; i++)
+	{
+		if (dist[i] == LLONG_MAX) std::cout << -1 << "\n";
+		else std::cout << dist[i] << "\n";
+	}
+
 	return 0;
 }
