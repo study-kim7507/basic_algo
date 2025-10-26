@@ -16,19 +16,24 @@ int main()
 	string s;
 	cin >> s;
 
-	int targetLen = 2 * n + 1;
-	string target(targetLen, 'I');
-	for (int i = 1; i < targetLen; i += 2)
-		target[i] = 'O';
-
 	int ans = 0;
-
-	int idx = 0;
-	while (idx < m)
+	int cnt = 0;
+	for (int i = 1; i < m - 1; i++)
 	{
-		if (s.substr(idx, targetLen) == target) ans++;
-		idx++;
+		if (s[i - 1] == 'I' && s[i] == 'O' && s[i + 1] == 'I') 
+		{
+			cnt++;
+			if (cnt == n)
+			{ 
+				ans++;
+				cnt--;
+			}
+			i++; 
+		}
+		else cnt = 0;
 	}
+
+
 
 	std::cout << ans << "\n";
 	return 0;
