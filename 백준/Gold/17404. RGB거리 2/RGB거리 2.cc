@@ -1,28 +1,25 @@
-// BOJ 17404. RGB 거리 2
+// BOJ 17404. RGB거리 2
 #include <iostream>
-#include <vector>
 #include <algorithm>
 using namespace std;
 
-#define INF 0x3f3f3f3f
-
-int n;
-int cost[1001][3];
+#define INF 987654321
 
 int main()
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
+	int n;
 	cin >> n;
+
+	int cost[1001][3];
 	for (int i = 1; i <= n; i++)
-	{
-		int r, g, b;
-		cin >> r >> g >> b;
-		cost[i][0] = r; cost[i][1] = g; cost[i][2] = b;
-	}
+		cin >> cost[i][0] >> cost[i][1] >> cost[i][2];
 
 	int ans = INF;
+
+	// 1번 집의 색상을 미리 결정
 	for (int i = 0; i < 3; i++)
 	{
 		int dp[1001][3];
@@ -45,5 +42,7 @@ int main()
 
 	std::cout << ans << "\n";
 
+	
+		
 	return 0;
 }
