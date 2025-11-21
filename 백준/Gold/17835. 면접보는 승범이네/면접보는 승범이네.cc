@@ -1,94 +1,70 @@
-// BOJ_17835. 면접보는 승범이네
-// 각 도시에서 면접장으로 가는 거리 -> 시간초과
-// 모든 면접장에서 동시에 출발해서 각 도시로 이동하는 거리 중 최단거리.
-// 기존의 다익스트라의 경우 특정 한 시작정점에서 다른 모든 정점으로의 최단거리를 구하는 것이였다면,
-// 해당 문제는 여러 시작 정점에서 다른 모든 정점으로의 최단 거리를 구해. 그 중 가장 큰 값을 반환하는 문제
-// 역방향으로 입력을 받고, 여러 면접장에서 동시에 출발. 다른 모든 정점까지의 최단 거리를 구한 뒤,
-// 그중 가장 큰 최단 거리를 갖는 정점과 그 거리를 출력하는 문제
+// BOJ 17835. 면접보는 승범이네
 #include <iostream>
+#include <climits>
 #include <vector>
 #include <queue>
 #include <algorithm>
 using namespace std;
 
-typedef long long ll;
-const ll INF = 0x7FFFFFFFFFFFFFFF;
 
-int N, M, K; // 도시(정점) 수, 도로(간선) 수, 면접장 수
-
-struct Edge
-{
-	int to;
-	ll cost;
-	bool operator<(const Edge& other) const
-	{
-		return other.cost < cost;
-	}
-};
-
-vector<Edge> adj[100001];
-vector<int> rooms; // 면접장
-ll dist[100001];
-
-void solve()
-{
-	fill(dist, dist + N + 1, INF);
-	for (int i = 0; i < rooms.size(); i++)
-		dist[rooms[i]] = 0;
-	
-	priority_queue<Edge, vector<Edge>> pq;
-	for (int i = 0; i < rooms.size(); i++)
-		pq.push({ rooms[i], 0});
-
-	while (!pq.empty())
-	{
-		auto curr = pq.top(); pq.pop();
-		if (dist[curr.to] < curr.cost) continue;
-		for (auto node : adj[curr.to])
-		{
-			if (dist[node.to] > curr.cost + node.cost)
-			{
-				dist[node.to] = curr.cost + node.cost;
-				pq.push({ node.to, dist[node.to] });
-			}
-		}
-	}
-}
+int n, m, k;
+vector<pair<int, int>> roads[100001];
 
 int main()
 {
-	ios::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> N >> M >> K;
-	for (int i = 0; i < M; i++)
+	ios::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
+	cin >> n >> m >> k;
+	
+	for (int i = 0; i < m; i++)
 	{
-		int U, V;
-		ll C;
-		cin >> U >> V >> C;
-		adj[V].push_back({ U, C });
+		int u, v, c;
+		cin >> u >> v >> c;
+		roads[v].push_back(make_pair(c, u));
 	}
 
-	for (int i = 0; i < K; i++)
+	vector<long long> dist(n + 1, LLONG_MAX);
+	priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+
+	for (int i = 0; i < k; i++)
 	{
-		int room;
-		cin >> room;
-		rooms.push_back(room);
+		int u;
+		cin >> u;
+		dist[u] = 0;
+		pq.push(make_pair(dist[u], u));
 	}
 
-	solve();
-	int maxIdx = -1;
-	ll maxValue = -1;
-	for (int i = 1; i <= N; i++)
+	while (!pq.empty())
 	{
-		if (dist[i] > maxValue)
+		long long curDist = pq.top().first;
+		int curCity = pq.top().second;
+		pq.pop();
+
+		if (dist[curCity] != curDist) continue;
+		for (auto nxt : roads[curCity])
 		{
-			maxIdx = i;
-			maxValue = dist[i];
+			long long nxtDist = nxt.first;
+			int nxtCity = nxt.second;
+
+			if (dist[nxtCity] <= curDist + nxtDist) continue;
+
+			dist[nxtCity] = curDist + nxtDist;
+			pq.push(make_pair(dist[nxtCity], nxtCity));
 		}
 	}
 
-	cout << maxIdx << "\n" << maxValue << "\n";
+	long long maxDist = 0;
+	int ans = 0;
+	for (int i = 1; i <= n; i++)
+	{
+		if (maxDist < dist[i])
+		{
+			maxDist = dist[i];
+			ans = i;
+		}
+	}
+	std::cout << ans << "\n";
+	std::cout << maxDist << "\n";
 	return 0;
 }
-
