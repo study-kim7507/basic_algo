@@ -1,19 +1,20 @@
-// BOJ_1654. 랜선 자르기
+// BOJ 1654. 랜선 자르기
 #include <iostream>
-#include <vector>
 #include <climits>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
-int k, l;
+int k, n;
+vector<int> lines;
 
-bool solve(long long length, vector<int>& v)
+bool solve(long long len)
 {
-	long long cnt = 0;
-	for (int i = 0; i < k; i++)
-		cnt += v[i] / length;
+	int cnt = 0;
+	for (auto line : lines)
+		cnt += line / len;
 
-	return cnt >= l;
+	return cnt >= n;
 }
 
 int main()
@@ -21,25 +22,24 @@ int main()
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> k >> l;
-	vector<int> v(k, 0);
+	cin >> k >> n;
 	for (int i = 0; i < k; i++)
-		cin >> v[i];
-
-	long long ans = 0;
-	long long st = 1, en = INT_MAX;
-	while (st <= en)
 	{
-		long long mid = (st + en) / 2;
-		if (solve(mid, v))
-		{
-			ans = max(ans, mid);
-			st = mid + 1;
-		}
-		else en = mid - 1;
+		int len;
+		cin >> len;
+		lines.push_back(len);
 	}
 
-	std::cout << ans << "\n";
+	long long st = 1;
+	long long en = LLONG_MAX - 1;
 
+	while (st + 1 < en)
+	{
+		long long mid = (st + en) / 2;
+		if (solve(mid)) st = mid;
+		else en = mid;
+	}
+	
+	std::cout << st << "\n";
 	return 0;
 }
